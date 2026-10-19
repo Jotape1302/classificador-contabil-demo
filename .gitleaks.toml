@@ -1,0 +1,9 @@
+# Regras padrão do gitleaks + exceção estreita: senhas/tokens fictícios das fixtures de teste
+# (ex.: "senha-forte-12", "final-passed-70") disparam generic-api-key. Só essa regra, só em tests/.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Credenciais fictícias de fixtures de teste"
+targetRules = ["generic-api-key"]
+paths = ['''^tests/''']

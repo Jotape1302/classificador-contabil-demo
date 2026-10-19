@@ -33,5 +33,5 @@ jobs:
           ./gitleaks version
       - name: Varredura
         # --redact: o segredo encontrado não aparece no log do Actions.
-        run: ./gitleaks git --redact --no-banner --verbose .
+        run: ./gitleaks git --config .gitleaks.toml --redact --no-banner --verbose .
 
