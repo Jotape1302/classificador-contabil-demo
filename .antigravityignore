@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.git/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.tar.gz
+*.csv
+*.xlsx
+*.parquet
+db_data/
+logs/

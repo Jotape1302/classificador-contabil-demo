@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.sql
+*.sql.gz
+*.dump
+backups/
+.venv/
+.build.log
+
+.venv/
+*.log
+.build.log

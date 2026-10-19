@@ -1,0 +1,129 @@
+/* Zaeron Academy - Markdown e Estilos Tipográficos */
+
+.academy-markdown {
+  color: var(--text-muted, #D8D0CA);
+  line-height: 1.75;
+}
+
+.academy-markdown h1,
+.academy-markdown h2,
+.academy-markdown h3 {
+  color: var(--text-title, #F4EFEA);
+  font-weight: 650;
+  line-height: 1.3;
+  margin: 1.7em 0 0.65em;
+}
+
+.academy-markdown h1 {
+  font-size: 1.75rem;
+  margin-top: 0;
+}
+
+.academy-markdown h2 {
+  font-size: 1.35rem;
+  border-bottom: 1px solid var(--border-color, #2A3038);
+  padding-bottom: 0.45rem;
+}
+
+.academy-markdown h3 {
+  font-size: 1.1rem;
+}
+
+.academy-markdown p,
+.academy-markdown ul,
+.academy-markdown ol {
+  margin: 0.85rem 0;
+}
+
+.academy-markdown ul {
+  list-style: disc;
+  padding-left: 1.35rem;
+}
+
+.academy-markdown ol {
+  list-style: decimal;
+  padding-left: 1.35rem;
+}
+
+.academy-markdown strong {
+  color: var(--text-title, #F4EFEA);
+  font-weight: 600;
+}
+
+.academy-markdown a {
+  color: #F08A3E;
+  text-decoration: underline;
+}
+
+.academy-markdown blockquote {
+  border-left: 3px solid var(--brand-copper, #C8753D);
+  background: var(--bg-sidebar);
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  color: var(--text-muted);
+  border-radius: 0 6px 6px 0;
+}
+
+.academy-markdown code {
+  border: 1px solid var(--border-color);
+  border-radius: 0.3rem;
+  background: var(--bg-canvas);
+  padding: 0.1rem 0.35rem;
+  color: var(--text-title);
+  font-size: 0.9em;
+}
+
+/* Light mode overrides for Academy */
+html.light .academy-markdown {
+  color: #334155;
+}
+html.light .academy-markdown h1,
+html.light .academy-markdown h2,
+html.light .academy-markdown h3,
+html.light .academy-markdown strong {
+  color: #090D1A;
+}
+html.light .academy-markdown h2 {
+  border-bottom-color: #CCD3DE;
+}
+html.light .academy-markdown blockquote {
+  background: #F1F4F9;
+  border-left-color: #B25820;
+  color: #334155;
+}
+html.light .academy-markdown code {
+  border-color: #CCD3DE;
+  background: #E8EDF4;
+  color: #090D1A;
+}
+
+/* Regras de impressão para Certificados (A4 Landscape) */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+  html, body, #root {
+    background: #FFFFFF !important;
+    color-scheme: light;
+  }
+  body {
+    background-image: none !important;
+  }
+  .certificate-actions {
+    display: none !important;
+  }
+  .certificate-page {
+    min-height: 0 !important;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+  }
+  .certificate-sheet {
+    width: 297mm !important;
+    height: 210mm !important;
+    max-width: none !important;
+    border-width: 8px !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+}

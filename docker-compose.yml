@@ -1,0 +1,189 @@
+name: classificador-contabil
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zaeron_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: zaeron_production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zaeron_admin -d zaeron_production"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    stop_grace_period: 60s
+    security_opt:
+      - no-new-privileges:true
+
+  migrate:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    image: zaeron-api:${ZAERON_IMAGE_TAG:-local}
+    restart: "no"
+    command: ["alembic", "upgrade", "head"]
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${MIGRATION_DATABASE_URL:-postgresql://zaeron_admin:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-zaeron_production}}
+      ZAERON_ENVIRONMENT: production
+    networks:
+      - backend_net
+    depends_on:
+      db:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    image: zaeron-api:${ZAERON_IMAGE_TAG:-local}
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      ZAERON_ENVIRONMENT: production
+    expose:
+      - "8000"
+    networks:
+      - backend_net
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/ready', timeout=3).read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    image: zaeron-web:${ZAERON_IMAGE_TAG:-local}
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - frontend_net
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/healthz"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=32m
+      - /var/run:size=4m
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+
+  omniroute:
+    image: ${OMNIROUTE_IMAGE:-diegosouzapw/omniroute@sha256:92c768c56e2de32c51a0621ef182835018b00b288c9bb235c5c5e4514658c1a1}
+    restart: unless-stopped
+    expose:
+      - "20128"
+    volumes:
+      - omniroute_data:/app/data
+  #  read_only: true
+  #  tmpfs:
+  #    - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    networks:
+      - backend_net
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.mjs"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./ops/caddy/routes.caddy:/etc/caddy/routes.caddy:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - frontend_net
+      - backend_net
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+      omniroute:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:2019/config/"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  backend_net:
+    driver: bridge
+  frontend_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    external: true
+    name: ${POSTGRES_VOLUME_NAME:-classificador-contabil_postgres_data}
+  omniroute_data:
+    external: true
+    name: ${OMNIROUTE_VOLUME_NAME:-classificador-contabil_omniroute_data}
+  caddy_data:
+    external: true
+    name: ${CADDY_DATA_VOLUME_NAME:-classificador-contabil_caddy_data}
+  caddy_config:
+    external: true
+    name: ${CADDY_CONFIG_VOLUME_NAME:-classificador-contabil_caddy_config}

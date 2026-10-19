@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090B0D" />
+    <meta name="description" content="Zaeron Contábil — classificação e conciliação inteligente." />
+    <title>Zaeron Contábil</title>
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('zaeron-theme') || localStorage.getItem('zaeron_theme');
+          var isDark = true;
+          if (saved === 'light') {
+            isDark = false;
+          } else if (saved === 'dark') {
+            isDark = true;
+          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            isDark = false;
+          }
+          var root = document.documentElement;
+          if (isDark) {
+            root.classList.remove('light');
+            root.classList.add('dark');
+            root.setAttribute('data-theme', 'dark');
+          } else {
+            root.classList.remove('dark');
+            root.classList.add('light');
+            root.setAttribute('data-theme', 'light');
+          }
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', isDark ? '#090B0D' : '#EEF1F6');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

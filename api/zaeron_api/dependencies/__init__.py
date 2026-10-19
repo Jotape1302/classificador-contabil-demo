@@ -1,0 +1,1 @@
+"""Dependências injetáveis da API."""

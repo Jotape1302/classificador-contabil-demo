@@ -1,0 +1,62 @@
+# Antigravity Rules — FastAPI & Docker Standard
+
+## 1. Perfil e Comportamento do Agente
+- Atue como Engenheiro de Software Sênior e Especialista em DevOps.
+- Priorize soluções modulares, seguras, performáticas e com baixo consumo de memória.
+- Sempre valide caminhos de arquivos e dependências antes de executar comandos ou refatorações destrutivas.
+- Respostas devem ser diretas, com explicações breves e focadas em código/comandos aplicáveis.
+
+---
+
+## 2. Padrões de Código Python & FastAPI
+- **Estrutura Modular:** Separe routers (`routers/`), schemas Pydantic (`schemas/`), repositórios (`repositories/`), serviços de negócios (`services/`) e utilitários (`core/` / `utils/`).
+- **Gerenciamento de Dependências & Segurança:**
+  - Validação estrita via schemas Pydantic e tipagem canônica.
+  - Autenticação e autorização via cookies seguros e dependências do FastAPI.
+- **Performance e Conexões:**
+  - Gerenciamento de conexões SQLAlchemy isoladas por request via `get_db`.
+  - Tratamento de exceções centralizado com handlers de erro sem vazar stack traces.
+
+---
+
+## 3. Padrões Docker & Infraestrutura
+- **Imagens:** Use imagens base enxutas (ex: `python:3.11-slim` multi-stage / alpine para proxy).
+- **Docker Compose:**
+  - Roteamento interno em rede bridge (`backend_net`, `frontend_net`), expondo apenas Caddy (80/443).
+  - Diretivas `restart: unless-stopped`, `read_only: true` e `healthcheck`.
+  - Volumes nomeados apenas para persistência necessária (`postgres_data`, `caddy_data`, etc.).
+- **Execução:** Não execute contêineres como `root` em produção (usuário `zaeron` dedicado).
+
+---
+
+## 4. Segurança e Gestão de Variáveis
+- **Segredos:** Nunca escreva senhas, tokens ou chaves de API diretamente no código.
+- **Ambiente:** Use `pydantic-settings` ou `python-dotenv` para ler variáveis configuradas no `.env`.
+- **Validação de Arquivos:** Sempre valide tipos MIME e limite o tamanho de uploads recebidos na API/Caddy.
+- **Arquivos Ignorados:** Garanta que `.env`, `__pycache__/`, `.venv/` e dados sensíveis de teste estejam estritamente listados no `.gitignore` e `.dockerignore`.
+
+---
+
+## 5. Estrutura Padrão do Projeto
+```text
+.
+├── .antigravityrules
+├── .dockerignore
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+├── Caddyfile
+├── pytest.ini
+├── requirements.txt
+├── api/                   # FastAPI Backend
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── zaeron_api/
+├── web/                   # React Frontend SPA
+│   ├── Dockerfile
+│   └── src/
+├── app/                   # Módulos compartilhados e core
+├── alembic/               # Migrações do banco
+└── tests/                 # Testes automatizados (pytest)
+```
+

@@ -1,0 +1,38 @@
+{
+	servers {
+		protocols h1 h2 h3
+	}
+}
+
+(security_headers) {
+	header {
+		-Server
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	}
+}
+
+{$ZAERON_DOMAIN:localhost} {
+	encode zstd gzip
+	import security_headers
+
+	header Content-Security-Policy "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; worker-src 'self' blob:"
+	@statement_upload path /api/classifier/upload
+	request_body @statement_upload {
+		max_size 13MB
+	}
+
+	handle /api/* {
+		reverse_proxy api:8000 {
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	handle {
+		import /etc/caddy/routes.caddy
+	}
+}

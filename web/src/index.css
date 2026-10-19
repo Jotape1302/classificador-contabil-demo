@@ -1,0 +1,179 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  :root {
+    color-scheme: dark;
+    --bg-canvas: #090B0D;
+    --bg-sidebar: #111419;
+    --bg-elevated: #171B20;
+    --border-color: #2A3038;
+    --text-title: #F4EFEA;
+    --text-muted: #A39B93;
+    --brand-copper: #C8753D;
+    --brand-action: #F08A3E;
+  }
+
+  html.light {
+    color-scheme: light;
+    --bg-canvas: #EEF1F6;
+    --bg-sidebar: #FFFFFF;
+    --bg-elevated: #FFFFFF;
+    --border-color: #CCD3DE;
+    --text-title: #090D1A;
+    --text-muted: #475569;
+    --brand-copper: #B25820;
+    --brand-action: #D2651B;
+  }
+
+  body {
+    @apply min-h-screen bg-canvas font-sans text-title antialiased;
+    background-image:
+      radial-gradient(circle at 78% -12%, rgba(200, 117, 61, 0.04), transparent 30rem),
+      linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+    background-size: auto, 32px 32px, 32px 32px;
+  }
+
+  html.light body {
+    background-image:
+      radial-gradient(circle at 78% -12%, rgba(178, 88, 32, 0.04), transparent 30rem),
+      linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-action ring-offset-2 ring-offset-canvas;
+  }
+
+  ::selection {
+    background: rgba(240, 138, 62, 0.28);
+  }
+
+  html.light ::selection {
+    background: rgba(178, 88, 32, 0.20);
+  }
+
+  /* Form Elements and Inputs in Light Mode */
+  html.light input:not([type="checkbox"]):not([type="radio"]),
+  html.light select,
+  html.light textarea {
+    background-color: #FFFFFF;
+    border-color: var(--border-color);
+    color: var(--text-title);
+  }
+
+  html.light input::placeholder,
+  html.light textarea::placeholder {
+    color: #64748B;
+    opacity: 0.9;
+  }
+
+  /* Table Header Distinction in Light Mode */
+  html.light thead {
+    background-color: #E6EBF2 !important;
+    border-bottom-color: var(--border-color);
+  }
+
+  html.light thead th {
+    color: #334155 !important;
+    font-weight: 700;
+  }
+
+  /* Card shadow in Light Mode */
+  html.light .bg-elevated,
+  html.light .bg-sidebar {
+    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.02);
+  }
+
+  /* Browser Autofill Consistency (Dark Theme) */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #090B0D inset !important;
+    -webkit-text-fill-color: #F4EFEA !important;
+    caret-color: #F4EFEA !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  input:-moz-autofill {
+    box-shadow: 0 0 0 30px #090B0D inset !important;
+    -moz-text-fill-color: #F4EFEA !important;
+    filter: none !important;
+  }
+
+  /* Browser Autofill Consistency (Light Theme) */
+  html.light input:-webkit-autofill,
+  html.light input:-webkit-autofill:hover,
+  html.light input:-webkit-autofill:focus,
+  html.light input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #FFFFFF inset !important;
+    -webkit-text-fill-color: #090D1A !important;
+    caret-color: #090D1A !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  html.light input:-moz-autofill {
+    box-shadow: 0 0 0 30px #FFFFFF inset !important;
+    -moz-text-fill-color: #090D1A !important;
+    filter: none !important;
+  }
+}
+
+
+@layer utilities {
+  .scrollbar-subtle {
+    scrollbar-color: var(--border-color) transparent;
+    scrollbar-width: thin;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .perspective-1200 {
+    perspective: 1200px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+}
+
+@keyframes zaeronGlint {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+    opacity: 0;
+  }
+}
+
+.animate-zaeron-glint {
+  animation: zaeronGlint 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
